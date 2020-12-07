@@ -1,6 +1,8 @@
 /* eslint-disable */
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -8,55 +10,134 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  GraphbackDate: Date;
   GraphbackObjectID: string;
 };
 
-/**  @model  */
-export type Comment = {
-  __typename?: 'Comment';
+/** @model */
+export type Cart = {
+  __typename?: 'Cart';
   _id: Scalars['GraphbackObjectID'];
-  text?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  /** @manyToOne(field: 'comments', key: 'noteId') */
-  note?: Maybe<Note>;
+  name: Scalars['String'];
+  /**
+   * @oneToMany(field: 'cart', key: 'cartId')
+   * @oneToMany(field: 'cart')
+   */
+  cartItems: Array<CartItem>;
 };
 
-export type CommentFilter = {
+
+/** @model */
+export type CartCartItemsArgs = {
+  filter?: Maybe<CartItemFilter>;
+};
+
+export type CartFilter = {
   _id?: Maybe<GraphbackObjectIdInput>;
-  text?: Maybe<StringInput>;
-  description?: Maybe<StringInput>;
-  noteId?: Maybe<GraphbackObjectIdInput>;
-  and?: Maybe<Array<CommentFilter>>;
-  or?: Maybe<Array<CommentFilter>>;
-  not?: Maybe<CommentFilter>;
+  name?: Maybe<StringInput>;
+  and?: Maybe<Array<CartFilter>>;
+  or?: Maybe<Array<CartFilter>>;
+  not?: Maybe<CartFilter>;
 };
 
-export type CommentResultList = {
-  __typename?: 'CommentResultList';
-  items: Array<Maybe<Comment>>;
+/** @model */
+export type CartItem = {
+  __typename?: 'CartItem';
+  _id: Scalars['GraphbackObjectID'];
+  quantity: Scalars['Int'];
+  /**
+   * @oneToOne(key: 'productId')
+   * @oneToOne(field: 'cartItem')
+   */
+  product: Product;
+  /** @manyToOne(field: 'cartItems', key: 'cartId') */
+  cart?: Maybe<Cart>;
+};
+
+export type CartItemFilter = {
+  _id?: Maybe<GraphbackObjectIdInput>;
+  quantity?: Maybe<IntInput>;
+  productId?: Maybe<GraphbackObjectIdInput>;
+  cartId?: Maybe<GraphbackObjectIdInput>;
+  and?: Maybe<Array<CartItemFilter>>;
+  or?: Maybe<Array<CartItemFilter>>;
+  not?: Maybe<CartItemFilter>;
+};
+
+export type CartItemResultList = {
+  __typename?: 'CartItemResultList';
+  items: Array<Maybe<CartItem>>;
   offset?: Maybe<Scalars['Int']>;
   limit?: Maybe<Scalars['Int']>;
   count?: Maybe<Scalars['Int']>;
 };
 
-export type CommentSubscriptionFilter = {
-  and?: Maybe<Array<CommentSubscriptionFilter>>;
-  or?: Maybe<Array<CommentSubscriptionFilter>>;
-  not?: Maybe<CommentSubscriptionFilter>;
+export type CartItemSubscriptionFilter = {
+  and?: Maybe<Array<CartItemSubscriptionFilter>>;
+  or?: Maybe<Array<CartItemSubscriptionFilter>>;
+  not?: Maybe<CartItemSubscriptionFilter>;
   _id?: Maybe<GraphbackObjectIdInput>;
-  text?: Maybe<StringInput>;
-  description?: Maybe<StringInput>;
+  quantity?: Maybe<IntInput>;
 };
 
-export type CreateCommentInput = {
-  text?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  noteId?: Maybe<Scalars['GraphbackObjectID']>;
+export type CartResultList = {
+  __typename?: 'CartResultList';
+  items: Array<Maybe<Cart>>;
+  offset?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
+  count?: Maybe<Scalars['Int']>;
 };
 
-export type CreateNoteInput = {
-  title: Scalars['String'];
+export type CartSubscriptionFilter = {
+  and?: Maybe<Array<CartSubscriptionFilter>>;
+  or?: Maybe<Array<CartSubscriptionFilter>>;
+  not?: Maybe<CartSubscriptionFilter>;
+  _id?: Maybe<GraphbackObjectIdInput>;
+  name?: Maybe<StringInput>;
+};
+
+export type CreateCartInput = {
+  name: Scalars['String'];
+};
+
+export type CreateCartItemInput = {
+  quantity: Scalars['Int'];
+  productId: Scalars['GraphbackObjectID'];
+  cartId?: Maybe<Scalars['GraphbackObjectID']>;
+};
+
+export type CreateOrderInput = {
+  datePlaced: Scalars['GraphbackDate'];
+  cartId: Scalars['GraphbackObjectID'];
+};
+
+export type CreateProductInput = {
+  name: Scalars['String'];
+  price: Scalars['Float'];
   description?: Maybe<Scalars['String']>;
+};
+
+export type FloatInput = {
+  ne?: Maybe<Scalars['Float']>;
+  eq?: Maybe<Scalars['Float']>;
+  le?: Maybe<Scalars['Float']>;
+  lt?: Maybe<Scalars['Float']>;
+  ge?: Maybe<Scalars['Float']>;
+  gt?: Maybe<Scalars['Float']>;
+  in?: Maybe<Array<Scalars['Float']>>;
+  between?: Maybe<Array<Scalars['Float']>>;
+};
+
+
+export type GraphbackDateInput = {
+  ne?: Maybe<Scalars['GraphbackDate']>;
+  eq?: Maybe<Scalars['GraphbackDate']>;
+  le?: Maybe<Scalars['GraphbackDate']>;
+  lt?: Maybe<Scalars['GraphbackDate']>;
+  ge?: Maybe<Scalars['GraphbackDate']>;
+  gt?: Maybe<Scalars['GraphbackDate']>;
+  in?: Maybe<Array<Scalars['GraphbackDate']>>;
+  between?: Maybe<Array<Scalars['GraphbackDate']>>;
 };
 
 
@@ -71,102 +152,128 @@ export type GraphbackObjectIdInput = {
   between?: Maybe<Array<Scalars['GraphbackObjectID']>>;
 };
 
-export type MutateCommentInput = {
-  _id: Scalars['GraphbackObjectID'];
-  text?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  noteId?: Maybe<Scalars['GraphbackObjectID']>;
+export type IntInput = {
+  ne?: Maybe<Scalars['Int']>;
+  eq?: Maybe<Scalars['Int']>;
+  le?: Maybe<Scalars['Int']>;
+  lt?: Maybe<Scalars['Int']>;
+  ge?: Maybe<Scalars['Int']>;
+  gt?: Maybe<Scalars['Int']>;
+  in?: Maybe<Array<Scalars['Int']>>;
+  between?: Maybe<Array<Scalars['Int']>>;
 };
 
-export type MutateNoteInput = {
+export type MutateCartInput = {
   _id: Scalars['GraphbackObjectID'];
-  title?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+};
+
+export type MutateCartItemInput = {
+  _id: Scalars['GraphbackObjectID'];
+  quantity?: Maybe<Scalars['Int']>;
+  productId?: Maybe<Scalars['GraphbackObjectID']>;
+  cartId?: Maybe<Scalars['GraphbackObjectID']>;
+};
+
+export type MutateOrderInput = {
+  _id: Scalars['GraphbackObjectID'];
+  datePlaced?: Maybe<Scalars['GraphbackDate']>;
+  cartId?: Maybe<Scalars['GraphbackObjectID']>;
+};
+
+export type MutateProductInput = {
+  _id: Scalars['GraphbackObjectID'];
+  name?: Maybe<Scalars['String']>;
+  price?: Maybe<Scalars['Float']>;
   description?: Maybe<Scalars['String']>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createNote?: Maybe<Note>;
-  updateNote?: Maybe<Note>;
-  deleteNote?: Maybe<Note>;
-  createComment?: Maybe<Comment>;
-  updateComment?: Maybe<Comment>;
-  deleteComment?: Maybe<Comment>;
+  createProduct?: Maybe<Product>;
+  updateProduct?: Maybe<Product>;
+  deleteProduct?: Maybe<Product>;
+  createCart?: Maybe<Cart>;
+  updateCart?: Maybe<Cart>;
+  deleteCart?: Maybe<Cart>;
+  createOrder?: Maybe<Order>;
+  updateOrder?: Maybe<Order>;
+  deleteOrder?: Maybe<Order>;
+  createCartItem?: Maybe<CartItem>;
+  updateCartItem?: Maybe<CartItem>;
+  deleteCartItem?: Maybe<CartItem>;
 };
 
 
-export type MutationCreateNoteArgs = {
-  input: CreateNoteInput;
+export type MutationCreateProductArgs = {
+  input: CreateProductInput;
 };
 
 
-export type MutationUpdateNoteArgs = {
-  input: MutateNoteInput;
+export type MutationUpdateProductArgs = {
+  input: MutateProductInput;
 };
 
 
-export type MutationDeleteNoteArgs = {
-  input: MutateNoteInput;
+export type MutationDeleteProductArgs = {
+  input: MutateProductInput;
 };
 
 
-export type MutationCreateCommentArgs = {
-  input: CreateCommentInput;
+export type MutationCreateCartArgs = {
+  input: CreateCartInput;
 };
 
 
-export type MutationUpdateCommentArgs = {
-  input: MutateCommentInput;
+export type MutationUpdateCartArgs = {
+  input: MutateCartInput;
 };
 
 
-export type MutationDeleteCommentArgs = {
-  input: MutateCommentInput;
+export type MutationDeleteCartArgs = {
+  input: MutateCartInput;
 };
 
-/**  @model  */
-export type Note = {
-  __typename?: 'Note';
+
+export type MutationCreateOrderArgs = {
+  input: CreateOrderInput;
+};
+
+
+export type MutationUpdateOrderArgs = {
+  input: MutateOrderInput;
+};
+
+
+export type MutationDeleteOrderArgs = {
+  input: MutateOrderInput;
+};
+
+
+export type MutationCreateCartItemArgs = {
+  input: CreateCartItemInput;
+};
+
+
+export type MutationUpdateCartItemArgs = {
+  input: MutateCartItemInput;
+};
+
+
+export type MutationDeleteCartItemArgs = {
+  input: MutateCartItemInput;
+};
+
+/** @model */
+export type Order = {
+  __typename?: 'Order';
   _id: Scalars['GraphbackObjectID'];
-  title: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
+  datePlaced: Scalars['GraphbackDate'];
   /**
-   * @oneToMany(field: 'note', key: 'noteId')
-   * @oneToMany(field: 'note')
+   * @oneToOne(key: 'cartId')
+   * @oneToOne(field: 'order')
    */
-  comments: Array<Maybe<Comment>>;
-};
-
-
-/**  @model  */
-export type NoteCommentsArgs = {
-  filter?: Maybe<CommentFilter>;
-};
-
-export type NoteFilter = {
-  _id?: Maybe<GraphbackObjectIdInput>;
-  title?: Maybe<StringInput>;
-  description?: Maybe<StringInput>;
-  and?: Maybe<Array<NoteFilter>>;
-  or?: Maybe<Array<NoteFilter>>;
-  not?: Maybe<NoteFilter>;
-};
-
-export type NoteResultList = {
-  __typename?: 'NoteResultList';
-  items: Array<Maybe<Note>>;
-  offset?: Maybe<Scalars['Int']>;
-  limit?: Maybe<Scalars['Int']>;
-  count?: Maybe<Scalars['Int']>;
-};
-
-export type NoteSubscriptionFilter = {
-  and?: Maybe<Array<NoteSubscriptionFilter>>;
-  or?: Maybe<Array<NoteSubscriptionFilter>>;
-  not?: Maybe<NoteSubscriptionFilter>;
-  _id?: Maybe<GraphbackObjectIdInput>;
-  title?: Maybe<StringInput>;
-  description?: Maybe<StringInput>;
+  cart: Cart;
 };
 
 export type OrderByInput = {
@@ -174,40 +281,129 @@ export type OrderByInput = {
   order?: Maybe<SortDirectionEnum>;
 };
 
+export type OrderFilter = {
+  _id?: Maybe<GraphbackObjectIdInput>;
+  datePlaced?: Maybe<GraphbackDateInput>;
+  cartId?: Maybe<GraphbackObjectIdInput>;
+  and?: Maybe<Array<OrderFilter>>;
+  or?: Maybe<Array<OrderFilter>>;
+  not?: Maybe<OrderFilter>;
+};
+
+export type OrderResultList = {
+  __typename?: 'OrderResultList';
+  items: Array<Maybe<Order>>;
+  offset?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
+  count?: Maybe<Scalars['Int']>;
+};
+
+export type OrderSubscriptionFilter = {
+  and?: Maybe<Array<OrderSubscriptionFilter>>;
+  or?: Maybe<Array<OrderSubscriptionFilter>>;
+  not?: Maybe<OrderSubscriptionFilter>;
+  _id?: Maybe<GraphbackObjectIdInput>;
+  datePlaced?: Maybe<GraphbackDateInput>;
+};
+
 export type PageRequest = {
   limit?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
 };
 
+/** @model */
+export type Product = {
+  __typename?: 'Product';
+  _id: Scalars['GraphbackObjectID'];
+  name: Scalars['String'];
+  price: Scalars['Float'];
+  description?: Maybe<Scalars['String']>;
+};
+
+export type ProductFilter = {
+  _id?: Maybe<GraphbackObjectIdInput>;
+  name?: Maybe<StringInput>;
+  price?: Maybe<FloatInput>;
+  description?: Maybe<StringInput>;
+  and?: Maybe<Array<ProductFilter>>;
+  or?: Maybe<Array<ProductFilter>>;
+  not?: Maybe<ProductFilter>;
+};
+
+export type ProductResultList = {
+  __typename?: 'ProductResultList';
+  items: Array<Maybe<Product>>;
+  offset?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
+  count?: Maybe<Scalars['Int']>;
+};
+
+export type ProductSubscriptionFilter = {
+  and?: Maybe<Array<ProductSubscriptionFilter>>;
+  or?: Maybe<Array<ProductSubscriptionFilter>>;
+  not?: Maybe<ProductSubscriptionFilter>;
+  _id?: Maybe<GraphbackObjectIdInput>;
+  name?: Maybe<StringInput>;
+  price?: Maybe<FloatInput>;
+  description?: Maybe<StringInput>;
+};
+
 export type Query = {
   __typename?: 'Query';
-  getDraftNotes?: Maybe<Array<Maybe<Note>>>;
-  getNote?: Maybe<Note>;
-  findNotes: NoteResultList;
-  getComment?: Maybe<Comment>;
-  findComments: CommentResultList;
+  getProduct?: Maybe<Product>;
+  findProducts: ProductResultList;
+  getCart?: Maybe<Cart>;
+  findCarts: CartResultList;
+  getOrder?: Maybe<Order>;
+  findOrders: OrderResultList;
+  getCartItem?: Maybe<CartItem>;
+  findCartItems: CartItemResultList;
 };
 
 
-export type QueryGetNoteArgs = {
+export type QueryGetProductArgs = {
   id: Scalars['GraphbackObjectID'];
 };
 
 
-export type QueryFindNotesArgs = {
-  filter?: Maybe<NoteFilter>;
+export type QueryFindProductsArgs = {
+  filter?: Maybe<ProductFilter>;
   page?: Maybe<PageRequest>;
   orderBy?: Maybe<OrderByInput>;
 };
 
 
-export type QueryGetCommentArgs = {
+export type QueryGetCartArgs = {
   id: Scalars['GraphbackObjectID'];
 };
 
 
-export type QueryFindCommentsArgs = {
-  filter?: Maybe<CommentFilter>;
+export type QueryFindCartsArgs = {
+  filter?: Maybe<CartFilter>;
+  page?: Maybe<PageRequest>;
+  orderBy?: Maybe<OrderByInput>;
+};
+
+
+export type QueryGetOrderArgs = {
+  id: Scalars['GraphbackObjectID'];
+};
+
+
+export type QueryFindOrdersArgs = {
+  filter?: Maybe<OrderFilter>;
+  page?: Maybe<PageRequest>;
+  orderBy?: Maybe<OrderByInput>;
+};
+
+
+export type QueryGetCartItemArgs = {
+  id: Scalars['GraphbackObjectID'];
+};
+
+
+export type QueryFindCartItemsArgs = {
+  filter?: Maybe<CartItemFilter>;
   page?: Maybe<PageRequest>;
   orderBy?: Maybe<OrderByInput>;
 };
@@ -232,40 +428,76 @@ export type StringInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  newNote: Note;
-  updatedNote: Note;
-  deletedNote: Note;
-  newComment: Comment;
-  updatedComment: Comment;
-  deletedComment: Comment;
+  newProduct: Product;
+  updatedProduct: Product;
+  deletedProduct: Product;
+  newCart: Cart;
+  updatedCart: Cart;
+  deletedCart: Cart;
+  newOrder: Order;
+  updatedOrder: Order;
+  deletedOrder: Order;
+  newCartItem: CartItem;
+  updatedCartItem: CartItem;
+  deletedCartItem: CartItem;
 };
 
 
-export type SubscriptionNewNoteArgs = {
-  filter?: Maybe<NoteSubscriptionFilter>;
+export type SubscriptionNewProductArgs = {
+  filter?: Maybe<ProductSubscriptionFilter>;
 };
 
 
-export type SubscriptionUpdatedNoteArgs = {
-  filter?: Maybe<NoteSubscriptionFilter>;
+export type SubscriptionUpdatedProductArgs = {
+  filter?: Maybe<ProductSubscriptionFilter>;
 };
 
 
-export type SubscriptionDeletedNoteArgs = {
-  filter?: Maybe<NoteSubscriptionFilter>;
+export type SubscriptionDeletedProductArgs = {
+  filter?: Maybe<ProductSubscriptionFilter>;
 };
 
 
-export type SubscriptionNewCommentArgs = {
-  filter?: Maybe<CommentSubscriptionFilter>;
+export type SubscriptionNewCartArgs = {
+  filter?: Maybe<CartSubscriptionFilter>;
 };
 
 
-export type SubscriptionUpdatedCommentArgs = {
-  filter?: Maybe<CommentSubscriptionFilter>;
+export type SubscriptionUpdatedCartArgs = {
+  filter?: Maybe<CartSubscriptionFilter>;
 };
 
 
-export type SubscriptionDeletedCommentArgs = {
-  filter?: Maybe<CommentSubscriptionFilter>;
+export type SubscriptionDeletedCartArgs = {
+  filter?: Maybe<CartSubscriptionFilter>;
+};
+
+
+export type SubscriptionNewOrderArgs = {
+  filter?: Maybe<OrderSubscriptionFilter>;
+};
+
+
+export type SubscriptionUpdatedOrderArgs = {
+  filter?: Maybe<OrderSubscriptionFilter>;
+};
+
+
+export type SubscriptionDeletedOrderArgs = {
+  filter?: Maybe<OrderSubscriptionFilter>;
+};
+
+
+export type SubscriptionNewCartItemArgs = {
+  filter?: Maybe<CartItemSubscriptionFilter>;
+};
+
+
+export type SubscriptionUpdatedCartItemArgs = {
+  filter?: Maybe<CartItemSubscriptionFilter>;
+};
+
+
+export type SubscriptionDeletedCartItemArgs = {
+  filter?: Maybe<CartItemSubscriptionFilter>;
 };
