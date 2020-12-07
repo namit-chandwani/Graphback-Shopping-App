@@ -6,125 +6,200 @@ directive @specifiedBy(
   url: String!
 ) on SCALAR
 
-""" @model """
-type Comment {
-  """ @id """
-  _id: ID!
-  text: String
-  description: String
+"""@model"""
+type Cart {
+  _id: GraphbackObjectID!
+  name: String!
 
-  """@manyToOne(field: 'comments', key: 'noteId')"""
-  note: Note
+  """
+  @oneToMany(field: 'cart', key: 'cartId')
+  @oneToMany(field: 'cart')
+  """
+  cartItems(filter: CartItemFilter): [CartItem!]!
 }
 
-input CommentFilter {
-  _id: IDInput
-  text: StringInput
-  description: StringInput
-  noteId: IDInput
-  and: [CommentFilter!]
-  or: [CommentFilter!]
-  not: CommentFilter
+input CartFilter {
+  _id: GraphbackObjectIDInput
+  name: StringInput
+  and: [CartFilter!]
+  or: [CartFilter!]
+  not: CartFilter
 }
 
-type CommentResultList {
-  items: [Comment]!
+"""@model"""
+type CartItem {
+  _id: GraphbackObjectID!
+  quantity: Int!
+
+  """
+  @oneToOne(key: 'productId')
+  @oneToOne(field: 'cartItem')
+  """
+  product: Product!
+
+  """@manyToOne(field: 'cartItems', key: 'cartId')"""
+  cart: Cart
+}
+
+input CartItemFilter {
+  _id: GraphbackObjectIDInput
+  quantity: IntInput
+  productId: GraphbackObjectIDInput
+  cartId: GraphbackObjectIDInput
+  and: [CartItemFilter!]
+  or: [CartItemFilter!]
+  not: CartItemFilter
+}
+
+type CartItemResultList {
+  items: [CartItem]!
   offset: Int
   limit: Int
   count: Int
 }
 
-input CommentSubscriptionFilter {
-  and: [CommentSubscriptionFilter!]
-  or: [CommentSubscriptionFilter!]
-  not: CommentSubscriptionFilter
-  _id: IDInput
-  text: StringInput
-  description: StringInput
+input CartItemSubscriptionFilter {
+  and: [CartItemSubscriptionFilter!]
+  or: [CartItemSubscriptionFilter!]
+  not: CartItemSubscriptionFilter
+  _id: GraphbackObjectIDInput
+  quantity: IntInput
 }
 
-input CreateCommentInput {
-  _id: ID
-  text: String
+type CartResultList {
+  items: [Cart]!
+  offset: Int
+  limit: Int
+  count: Int
+}
+
+input CartSubscriptionFilter {
+  and: [CartSubscriptionFilter!]
+  or: [CartSubscriptionFilter!]
+  not: CartSubscriptionFilter
+  _id: GraphbackObjectIDInput
+  name: StringInput
+}
+
+input CreateCartInput {
+  name: String!
+}
+
+input CreateCartItemInput {
+  quantity: Int!
+  productId: GraphbackObjectID!
+  cartId: GraphbackObjectID
+}
+
+input CreateOrderInput {
+  datePlaced: GraphbackDate!
+  cartId: GraphbackObjectID!
+}
+
+input CreateProductInput {
+  name: String!
+  price: Float!
   description: String
-  noteId: ID
 }
 
-input CreateNoteInput {
-  _id: ID
-  title: String!
-  description: String
+input FloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  in: [Float!]
+  between: [Float!]
 }
 
-input IDInput {
-  ne: ID
-  eq: ID
-  le: ID
-  lt: ID
-  ge: ID
-  gt: ID
-  in: [ID!]
+scalar GraphbackDate
+
+input GraphbackDateInput {
+  ne: GraphbackDate
+  eq: GraphbackDate
+  le: GraphbackDate
+  lt: GraphbackDate
+  ge: GraphbackDate
+  gt: GraphbackDate
+  in: [GraphbackDate!]
+  between: [GraphbackDate!]
 }
 
-input MutateCommentInput {
-  _id: ID!
-  text: String
-  description: String
-  noteId: ID
+scalar GraphbackObjectID
+
+input GraphbackObjectIDInput {
+  ne: GraphbackObjectID
+  eq: GraphbackObjectID
+  le: GraphbackObjectID
+  lt: GraphbackObjectID
+  ge: GraphbackObjectID
+  gt: GraphbackObjectID
+  in: [GraphbackObjectID!]
+  between: [GraphbackObjectID!]
 }
 
-input MutateNoteInput {
-  _id: ID!
-  title: String
+input IntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  in: [Int!]
+  between: [Int!]
+}
+
+input MutateCartInput {
+  _id: GraphbackObjectID!
+  name: String
+}
+
+input MutateCartItemInput {
+  _id: GraphbackObjectID!
+  quantity: Int
+  productId: GraphbackObjectID
+  cartId: GraphbackObjectID
+}
+
+input MutateOrderInput {
+  _id: GraphbackObjectID!
+  datePlaced: GraphbackDate
+  cartId: GraphbackObjectID
+}
+
+input MutateProductInput {
+  _id: GraphbackObjectID!
+  name: String
+  price: Float
   description: String
 }
 
 type Mutation {
-  createNote(input: CreateNoteInput!): Note
-  updateNote(input: MutateNoteInput!): Note
-  deleteNote(input: MutateNoteInput!): Note
-  createComment(input: CreateCommentInput!): Comment
-  updateComment(input: MutateCommentInput!): Comment
-  deleteComment(input: MutateCommentInput!): Comment
+  createProduct(input: CreateProductInput!): Product
+  updateProduct(input: MutateProductInput!): Product
+  deleteProduct(input: MutateProductInput!): Product
+  createCart(input: CreateCartInput!): Cart
+  updateCart(input: MutateCartInput!): Cart
+  deleteCart(input: MutateCartInput!): Cart
+  createOrder(input: CreateOrderInput!): Order
+  updateOrder(input: MutateOrderInput!): Order
+  deleteOrder(input: MutateOrderInput!): Order
+  createCartItem(input: CreateCartItemInput!): CartItem
+  updateCartItem(input: MutateCartItemInput!): CartItem
+  deleteCartItem(input: MutateCartItemInput!): CartItem
 }
 
-""" @model """
-type Note {
-  """ @id """
-  _id: ID!
-  title: String!
-  description: String
+"""@model"""
+type Order {
+  _id: GraphbackObjectID!
+  datePlaced: GraphbackDate!
 
   """
-  @oneToMany(field: 'note', key: 'noteId')
-  @oneToMany(field: 'note')
+  @oneToOne(key: 'cartId')
+  @oneToOne(field: 'order')
   """
-  comments(filter: CommentFilter): [Comment]!
-}
-
-input NoteFilter {
-  _id: IDInput
-  title: StringInput
-  description: StringInput
-  and: [NoteFilter!]
-  or: [NoteFilter!]
-  not: NoteFilter
-}
-
-type NoteResultList {
-  items: [Note]!
-  offset: Int
-  limit: Int
-  count: Int
-}
-
-input NoteSubscriptionFilter {
-  and: [NoteSubscriptionFilter!]
-  or: [NoteSubscriptionFilter!]
-  not: NoteSubscriptionFilter
-  _id: IDInput
-  title: StringInput
-  description: StringInput
+  cart: Cart!
 }
 
 input OrderByInput {
@@ -132,17 +207,79 @@ input OrderByInput {
   order: SortDirectionEnum = ASC
 }
 
+input OrderFilter {
+  _id: GraphbackObjectIDInput
+  datePlaced: GraphbackDateInput
+  cartId: GraphbackObjectIDInput
+  and: [OrderFilter!]
+  or: [OrderFilter!]
+  not: OrderFilter
+}
+
+type OrderResultList {
+  items: [Order]!
+  offset: Int
+  limit: Int
+  count: Int
+}
+
+input OrderSubscriptionFilter {
+  and: [OrderSubscriptionFilter!]
+  or: [OrderSubscriptionFilter!]
+  not: OrderSubscriptionFilter
+  _id: GraphbackObjectIDInput
+  datePlaced: GraphbackDateInput
+}
+
 input PageRequest {
   limit: Int
   offset: Int
 }
 
+"""@model"""
+type Product {
+  _id: GraphbackObjectID!
+  name: String!
+  price: Float!
+  description: String
+}
+
+input ProductFilter {
+  _id: GraphbackObjectIDInput
+  name: StringInput
+  price: FloatInput
+  description: StringInput
+  and: [ProductFilter!]
+  or: [ProductFilter!]
+  not: ProductFilter
+}
+
+type ProductResultList {
+  items: [Product]!
+  offset: Int
+  limit: Int
+  count: Int
+}
+
+input ProductSubscriptionFilter {
+  and: [ProductSubscriptionFilter!]
+  or: [ProductSubscriptionFilter!]
+  not: ProductSubscriptionFilter
+  _id: GraphbackObjectIDInput
+  name: StringInput
+  price: FloatInput
+  description: StringInput
+}
+
 type Query {
-  getDraftNotes: [Note]
-  getNote(id: ID!): Note
-  findNotes(filter: NoteFilter, page: PageRequest, orderBy: OrderByInput): NoteResultList!
-  getComment(id: ID!): Comment
-  findComments(filter: CommentFilter, page: PageRequest, orderBy: OrderByInput): CommentResultList!
+  getProduct(id: GraphbackObjectID!): Product
+  findProducts(filter: ProductFilter, page: PageRequest, orderBy: OrderByInput): ProductResultList!
+  getCart(id: GraphbackObjectID!): Cart
+  findCarts(filter: CartFilter, page: PageRequest, orderBy: OrderByInput): CartResultList!
+  getOrder(id: GraphbackObjectID!): Order
+  findOrders(filter: OrderFilter, page: PageRequest, orderBy: OrderByInput): OrderResultList!
+  getCartItem(id: GraphbackObjectID!): CartItem
+  findCartItems(filter: CartItemFilter, page: PageRequest, orderBy: OrderByInput): CartItemResultList!
 }
 
 enum SortDirectionEnum {
@@ -164,10 +301,16 @@ input StringInput {
 }
 
 type Subscription {
-  newNote(filter: NoteSubscriptionFilter): Note!
-  updatedNote(filter: NoteSubscriptionFilter): Note!
-  deletedNote(filter: NoteSubscriptionFilter): Note!
-  newComment(filter: CommentSubscriptionFilter): Comment!
-  updatedComment(filter: CommentSubscriptionFilter): Comment!
-  deletedComment(filter: CommentSubscriptionFilter): Comment!
+  newProduct(filter: ProductSubscriptionFilter): Product!
+  updatedProduct(filter: ProductSubscriptionFilter): Product!
+  deletedProduct(filter: ProductSubscriptionFilter): Product!
+  newCart(filter: CartSubscriptionFilter): Cart!
+  updatedCart(filter: CartSubscriptionFilter): Cart!
+  deletedCart(filter: CartSubscriptionFilter): Cart!
+  newOrder(filter: OrderSubscriptionFilter): Order!
+  updatedOrder(filter: OrderSubscriptionFilter): Order!
+  deletedOrder(filter: OrderSubscriptionFilter): Order!
+  newCartItem(filter: CartItemSubscriptionFilter): CartItem!
+  updatedCartItem(filter: CartItemSubscriptionFilter): CartItem!
+  deletedCartItem(filter: CartItemSubscriptionFilter): CartItem!
 }

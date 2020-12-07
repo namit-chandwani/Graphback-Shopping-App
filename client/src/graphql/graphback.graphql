@@ -1,147 +1,278 @@
-fragment NoteFields on Note {
+fragment ProductFields on Product {
    _id
-   title
+   name
+   price
    description
 
-} 
+}
 
-fragment NoteExpandedFields on Note {
+fragment ProductExpandedFields on Product {
    _id
-   title
+   name
+   price
    description
-   comments {
+
+}
+
+fragment CartFields on Cart {
+   _id
+   name
+
+}
+
+fragment CartExpandedFields on Cart {
+   _id
+   name
+   cartItems {
       _id
-      text
+      quantity
+   }
+}
+
+fragment CartItemFields on CartItem {
+   _id
+   quantity
+
+}
+
+fragment CartItemExpandedFields on CartItem {
+   _id
+   quantity
+   product {
+      _id
+      name
+      price
       description
    }
-} 
-
-fragment CommentFields on Comment {
-   _id
-   text
-   description
-
-} 
-
-fragment CommentExpandedFields on Comment {
-   _id
-   text
-   description
-   note {
+   cart {
       _id
-      title
-      description
+      name
    }
-} 
+}
 
-query findNotes($filter: NoteFilter, $page: PageRequest, $orderBy: OrderByInput) {
-    findNotes(filter: $filter, page: $page, orderBy: $orderBy) {
+fragment OrderFields on Order {
+   _id
+   datePlaced
+
+}
+
+fragment OrderExpandedFields on Order {
+   _id
+   datePlaced
+   cart {
+      _id
+      name
+   }
+}
+
+query findProducts($filter: ProductFilter, $page: PageRequest, $orderBy: OrderByInput) {
+    findProducts(filter: $filter, page: $page, orderBy: $orderBy) {
       items {
-        ...NoteExpandedFields
+        ...ProductExpandedFields
       }
       offset
       limit
       count
     }
-  }
+}
 
-query getNote($id: ID!) {
-    getNote(id: $id) {
-      ...NoteExpandedFields
+query getProduct($id: GraphbackObjectID!) {
+    getProduct(id: $id) {
+      ...ProductExpandedFields
     }
-  }
+}
 
-query findComments($filter: CommentFilter, $page: PageRequest, $orderBy: OrderByInput) {
-    findComments(filter: $filter, page: $page, orderBy: $orderBy) {
+query findCarts($filter: CartFilter, $page: PageRequest, $orderBy: OrderByInput) {
+    findCarts(filter: $filter, page: $page, orderBy: $orderBy) {
       items {
-        ...CommentExpandedFields
+        ...CartExpandedFields
       }
       offset
       limit
       count
     }
-  }
+}
 
-query getComment($id: ID!) {
-    getComment(id: $id) {
-      ...CommentExpandedFields
+query getCart($id: GraphbackObjectID!) {
+    getCart(id: $id) {
+      ...CartExpandedFields
     }
-  }
+}
 
-mutation createNote($input: CreateNoteInput!) {
-  createNote(input: $input) {
-      ...NoteFields
+query findCartItems($filter: CartItemFilter, $page: PageRequest, $orderBy: OrderByInput) {
+    findCartItems(filter: $filter, page: $page, orderBy: $orderBy) {
+      items {
+        ...CartItemExpandedFields
+      }
+      offset
+      limit
+      count
+    }
+}
+
+query getCartItem($id: GraphbackObjectID!) {
+    getCartItem(id: $id) {
+      ...CartItemExpandedFields
+    }
+}
+
+query findOrders($filter: OrderFilter, $page: PageRequest, $orderBy: OrderByInput) {
+    findOrders(filter: $filter, page: $page, orderBy: $orderBy) {
+      items {
+        ...OrderExpandedFields
+      }
+      offset
+      limit
+      count
+    }
+}
+
+query getOrder($id: GraphbackObjectID!) {
+    getOrder(id: $id) {
+      ...OrderExpandedFields
+    }
+}
+
+mutation createProduct($input: CreateProductInput!) {
+  createProduct(input: $input) {
+      ...ProductFields
   }
 }
 
-
-mutation updateNote($input: MutateNoteInput!) {
-  updateNote(input: $input) {
-      ...NoteFields
+mutation updateProduct($input: MutateProductInput!) {
+  updateProduct(input: $input) {
+      ...ProductFields
   }
 }
 
-
-mutation deleteNote($input: MutateNoteInput!) {
-  deleteNote(input: $input) {
-      ...NoteFields
+mutation deleteProduct($input: MutateProductInput!) {
+  deleteProduct(input: $input) {
+      ...ProductFields
   }
 }
 
-
-mutation createComment($input: CreateCommentInput!) {
-  createComment(input: $input) {
-      ...CommentFields
+mutation createCart($input: CreateCartInput!) {
+  createCart(input: $input) {
+      ...CartFields
   }
 }
 
-
-mutation updateComment($input: MutateCommentInput!) {
-  updateComment(input: $input) {
-      ...CommentFields
+mutation updateCart($input: MutateCartInput!) {
+  updateCart(input: $input) {
+      ...CartFields
   }
 }
 
-
-mutation deleteComment($input: MutateCommentInput!) {
-  deleteComment(input: $input) {
-      ...CommentFields
+mutation deleteCart($input: MutateCartInput!) {
+  deleteCart(input: $input) {
+      ...CartFields
   }
 }
 
-
-subscription newNote($filter: NoteSubscriptionFilter) {
-  newNote(filter: $filter) {
-      ...NoteFields
+mutation createCartItem($input: CreateCartItemInput!) {
+  createCartItem(input: $input) {
+      ...CartItemFields
   }
-} 
+}
 
-subscription updatedNote($filter: NoteSubscriptionFilter) {
-  updatedNote(filter: $filter) {
-      ...NoteFields
+mutation updateCartItem($input: MutateCartItemInput!) {
+  updateCartItem(input: $input) {
+      ...CartItemFields
   }
-} 
+}
 
-subscription deletedNote($filter: NoteSubscriptionFilter) {
-  deletedNote(filter: $filter) {
-      ...NoteFields
+mutation deleteCartItem($input: MutateCartItemInput!) {
+  deleteCartItem(input: $input) {
+      ...CartItemFields
   }
-} 
+}
 
-subscription newComment($filter: CommentSubscriptionFilter) {
-  newComment(filter: $filter) {
-      ...CommentFields
+mutation createOrder($input: CreateOrderInput!) {
+  createOrder(input: $input) {
+      ...OrderFields
   }
-} 
+}
 
-subscription updatedComment($filter: CommentSubscriptionFilter) {
-  updatedComment(filter: $filter) {
-      ...CommentFields
+mutation updateOrder($input: MutateOrderInput!) {
+  updateOrder(input: $input) {
+      ...OrderFields
   }
-} 
+}
 
-subscription deletedComment($filter: CommentSubscriptionFilter) {
-  deletedComment(filter: $filter) {
-      ...CommentFields
+mutation deleteOrder($input: MutateOrderInput!) {
+  deleteOrder(input: $input) {
+      ...OrderFields
   }
-} 
+}
+
+subscription newProduct($filter: ProductSubscriptionFilter) {
+  newProduct(filter: $filter) {
+      ...ProductFields
+  }
+}
+
+subscription updatedProduct($filter: ProductSubscriptionFilter) {
+  updatedProduct(filter: $filter) {
+      ...ProductFields
+  }
+}
+
+subscription deletedProduct($filter: ProductSubscriptionFilter) {
+  deletedProduct(filter: $filter) {
+      ...ProductFields
+  }
+}
+
+subscription newCart($filter: CartSubscriptionFilter) {
+  newCart(filter: $filter) {
+      ...CartFields
+  }
+}
+
+subscription updatedCart($filter: CartSubscriptionFilter) {
+  updatedCart(filter: $filter) {
+      ...CartFields
+  }
+}
+
+subscription deletedCart($filter: CartSubscriptionFilter) {
+  deletedCart(filter: $filter) {
+      ...CartFields
+  }
+}
+
+subscription newCartItem($filter: CartItemSubscriptionFilter) {
+  newCartItem(filter: $filter) {
+      ...CartItemFields
+  }
+}
+
+subscription updatedCartItem($filter: CartItemSubscriptionFilter) {
+  updatedCartItem(filter: $filter) {
+      ...CartItemFields
+  }
+}
+
+subscription deletedCartItem($filter: CartItemSubscriptionFilter) {
+  deletedCartItem(filter: $filter) {
+      ...CartItemFields
+  }
+}
+
+subscription newOrder($filter: OrderSubscriptionFilter) {
+  newOrder(filter: $filter) {
+      ...OrderFields
+  }
+}
+
+subscription updatedOrder($filter: OrderSubscriptionFilter) {
+  updatedOrder(filter: $filter) {
+      ...OrderFields
+  }
+}
+
+subscription deletedOrder($filter: OrderSubscriptionFilter) {
+  deletedOrder(filter: $filter) {
+      ...OrderFields
+  }
+}
