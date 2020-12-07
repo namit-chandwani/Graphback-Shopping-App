@@ -1,24 +1,52 @@
-""" @model """
-type Note {
-  _id: GraphbackObjectID!
-  title: String!
-  description: String
-  """
-  @oneToMany(field: 'note')
-  """
-  comments: [Comment]!
-}
-
-""" @model """
-type Comment {
-  _id: GraphbackObjectID!
-  text: String
-  description: String
-  roles: [String!]!
-}
-
-type Query {
-  getDraftNotes: [Note]
-}
-
 scalar GraphbackObjectID
+
+# Graphback Date scalar.
+scalar GraphbackDate
+
+"""
+@model
+"""
+type Product {
+  _id: GraphbackObjectID!
+  name: String!
+  price: Float!
+  description: String
+}
+
+"""
+@model
+"""
+type Cart {
+  _id: GraphbackObjectID!
+  name: String!
+
+  """
+  @oneToMany(field: 'cart')
+  """
+  cartItems: [CartItem!]!
+}
+
+"""
+@model
+"""
+type Order {
+  _id: GraphbackObjectID!
+  datePlaced: GraphbackDate!
+  """
+  @oneToOne(field: 'order')
+  """
+  cart: Cart!
+}
+
+"""
+@model
+"""
+type CartItem {
+  _id: GraphbackObjectID!
+  quantity: Int!
+
+  """
+  @oneToOne(field: 'cartItem')
+  """
+  product: Product!
+}
